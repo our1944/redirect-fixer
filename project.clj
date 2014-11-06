@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/java.jdbc "0.3.6"]
                  [mysql/mysql-connector-java "5.1.25"]
+                 [org.xerial/sqlite-jdbc "3.7.2"]
                  [http-kit "2.1.16"]
                  [http-kit.fake "0.2.1"]
                  [enlive "1.1.5"]]
