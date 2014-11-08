@@ -55,7 +55,10 @@
       (insert-test-data test-data)
       (update-nodes-body db-spec [{:nid 1 :body "updated"}])
       (testing "update body should works"
-        (is (= (:body (first (filter #(= 1 (:nid %)) (get-nodes db-spec))))
-               "updated")))
+        (let [node1 (->> db-spec
+                         get-nodes
+                         (filter #(= (:nid %)))
+                         first)]
+        (is (= (:body node1) "updated"))))
       (catch Exception e (println e))
       (finally (remove-db-file)))))

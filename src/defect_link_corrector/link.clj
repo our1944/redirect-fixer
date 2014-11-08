@@ -20,3 +20,31 @@
   [body]
   (let [snippet (html/html-snippet body)]
     (html/select snippet [:a])))
+
+(defn to-absolute
+  "deterine if url is "
+  [prefix url]
+  (cond
+   (re-find #"^http://" url) url
+   (re-find #"^/" url) (str prefix url)
+   :else url))
+
+(defn to-relative
+  [prefix url]
+  (let [relative (clojure.string/replace url prefix "")]
+    (if (= "" relative)
+      "/"
+      relative)))
+
+(defn new-url-to-relative
+  [prefix url-map]
+  (assoc url-map (to-relative prefix (:url url-map))))
+
+(defn convert-origin-url
+  [prefix origin-url]
+  (let [absolute (partial to-absolute prefix)
+        result-map (->> origin-url
+                        absolute
+                        prob-url
+                        (new-url-to-relative prefix))]
+    (assoc result-map :origin-url origin-url)))

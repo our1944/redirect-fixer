@@ -19,5 +19,28 @@
 <div>inner <a href=\"another-link\">another</a></div></div>"
         links (extract-links nested-text)]
     (testing "extract-links should get all links out, even nested"
-      (is (= (count links)
-           2)))))
+      (are [x y] (= x y)
+           (count links) 2
+           (-> links first (get-in [:attrs :href])) "/fancy-link"))))
+
+(deftest to-absolute-test
+  (let [prefix "http://www.yachtico.com"
+        relative "/de/croatia"
+        absolute "http://yachtico.com/de"
+        without-protocol "www.yachtico.com/yacht-charter-rentals-greece"]
+    (testing "to-absolute should be able to handle all situations defined here"
+      (are [x y] (= x y)
+           "http://www.yachtico.com" (to-absolute prefix prefix)
+           "http://www.yachtico.com/de/croatia" (to-absolute prefix relative)
+           "http://yachtico.com/de" (to-absolute prefix absolute)
+           "www.yachtico.com/yacht-charter-rentals-greece" (to-absolute prefix without-protocol)))))
+
+(deftest to-relative-test
+  (let [prefix "http://www.yachtico.com"
+        relative "/de/croatia"
+        absolute (str prefix "/de")]
+    (testing "to-relative should only convert absolute to relative"
+      (are [x y] (= x y)
+           "/de" (to-relative prefix absolute)
+           "/de/croatia" (to-relative prefix relative)
+           "/" (to-relative prefix prefix)))))
