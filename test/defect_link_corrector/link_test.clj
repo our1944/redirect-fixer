@@ -8,11 +8,21 @@
   (let [url "http://fancy-url"
         res (with-fake-http [url {:opts {:url url}
                                   :status 200}]
-              (prob-url url))]
+              (prob-url url))
+        redirected (with-fake-http [url {:opts {:url (str url ".com")
+                                                :trace-redirects (list url)}
+                                         :url (str url ".com")}]
+                     (prob-url url))]
 
     (testing "valid 200 url without redirect should have nil for trace-redirects"
       (is (= (:trace-redirects res)
-             nil)))))
+             nil)))
+    (testing "redirected should contains trace-redirects"
+      (are [x y] (= x y)
+           url (-> redirected
+                   :trace-redirects
+                   first)
+           "http://fancy-url.com" (:url redirected)))))
 
 (deftest extract-link-test
   (let [nested-text "<div>outer <a href=\"/fancy-link\">fancy</a>
@@ -44,3 +54,45 @@
            "/de" (to-relative prefix absolute)
            "/de/croatia" (to-relative prefix relative)
            "/" (to-relative prefix prefix)))))
+
+(deftest new-url-to-relative-test
+  (let [prefix "http://fancy-url.com"
+        resp {:status 200
+              :url prefix
+              :trace-redirects '("http://fancy-url")}
+        processed (new-url-to-relative prefix resp)]
+    (testing "new-url-to-relative-test"
+      (is (= "/" (:url-relative processed))))))
+
+(deftest process-origin-url-test
+  (let [prefix "http://fancy-url.com"
+        url "http://fancy-url"
+        resp {:status 200
+              :url prefix
+              :trace-redirects (list url)}
+        processed (with-fake-http [url {:opts {:url (str url ".com")
+                                                :trace-redirects (list url)}
+                                         :url (str url ".com")}]
+                     (process-origin-url prefix "http://fancy-url"))]
+    (testing "check if result map is valid"
+      (are [x y] (= x y)
+           "/" (:url-relative processed)
+           "http://fancy-url" (:origin-url processed)))))
+
+(deftest problematic-links-only-test
+  (let [urls '({:origin-url "http://fancy-url"
+                :url-relative "/"
+                :url "http://fancy-url.com"
+                :trace-redirects '("http://fancy-url")
+                :status 200}
+               {:origin-url "fancy-url"
+                :url-relative "fancy-url"
+                :status 404}
+               {:origin-url "http://fancy-url.com"
+                :url "http://fancy-url.com"
+                :url-relative "/"
+                :status 200})]
+    (testing "problematic-url-only should filter out health links"
+      (is (= 2 (-> urls
+                   problematic-links-only
+                   count))))))

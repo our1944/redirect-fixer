@@ -38,9 +38,9 @@
 
 (defn new-url-to-relative
   [prefix url-map]
-  (assoc url-map (to-relative prefix (:url url-map))))
+  (assoc url-map :url-relative (to-relative prefix (:url url-map))))
 
-(defn convert-origin-url
+(defn process-origin-url
   [prefix origin-url]
   (let [absolute (partial to-absolute prefix)
         result-map (->> origin-url
@@ -48,3 +48,13 @@
                         prob-url
                         (new-url-to-relative prefix))]
     (assoc result-map :origin-url origin-url)))
+
+(defn problematic-links-only
+  "take a coll of url-maps returned by link/process-origin-url
+  only keep the status not 200 or with redirects"
+  [url-maps]
+  (filter (fn [curr]
+            (or
+             (-> curr :status (= 200) not)
+             (-> curr :trace-redirects empty? not)))
+          url-maps))
