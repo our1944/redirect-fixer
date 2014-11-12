@@ -5,6 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/java.jdbc "0.3.6"]
+                 [org.clojure/data.csv "0.1.2"]
                  [mysql/mysql-connector-java "5.1.25"]
                  [org.xerial/sqlite-jdbc "3.7.2"]
                  [http-kit "2.1.16"]

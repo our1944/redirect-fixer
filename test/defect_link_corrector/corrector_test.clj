@@ -15,27 +15,9 @@
       (is (= (->> (attach-links :origin node) :links :origin nil? not) true)))))
 
 
-(deftest can-correct-test
-  (let [can {:status 200
-             :origin-url "http://fancy-url.com"
-             :url-relative "/"}
-        can-not {:status 404
-                 :origin-url "/no-such-thing"
-                 :url-relative "/no-such-thing"
-                 }
-        can-not-200 {:status 200
-                     :origin-url "/some-path"
-                     :url-relative "/some-path"}]
-    (testing "only status 200 and origin-url not equals to url-relative can be corrected"
-      (are [x y] (= x y)
-           true (can-correct? can)
-           false (can-correct? can-not)
-           false (can-correct? can-not-200)))))
-
-
 (deftest correct-body-test
   (let [url-maps '({:status 200
-                    :orgin-url "http://fancy-url.com"
+                    :origin-url "http://fancy-url.com"
                     :url-relative "/"
                     }
                    {:status 404
@@ -51,3 +33,50 @@
         result (gen-href url)]
     (testing "valid href attribute should be generated"
       (is (= "href=\"http://www.fancy.com\"" result)))))
+
+(deftest produce-node-links-test
+  (let [url-maps '({:status 200
+                     :origin-url "http://fancy-url.com"
+                     :url-relative "/"
+                     }
+                    {:status 404
+                     :origin-url "/no-such-path"
+                     :url-relative "/no-such-path"}
+                    {:status 200
+                     :origin-url "/"
+                     :url-relative "/"})
+        body "<a href=\"/no-such-path\">/no-such-path</a><a href=\"http://fancy-url.com\">http://fancy-url.com</a><a href=\"/\">home</a>"
+        node {:nid 1
+              :status 1
+              :type "node"
+              :body body
+              :links url-maps}
+        processed (produce-node-links node)]
+    (testing "only errors will be kept and produce product with node"
+      (are [x y] (= x y)
+           2 (count processed)
+           true (every? :nid processed)))))
+
+(deftest process-nodes-test
+  (let [body "<a href=\"/no-such-path\">/no-such-path</a><a href=\"http://fancy-url.com\">http://fancy-url.com</a><a href=\"/\">home</a>"
+        nodes [{:nid 1
+                :status 1
+                :type "node"
+                :body body}]
+        body-mem (atom "")
+        db-update-func (fn [b] (compare-and-set! body-mem @body-mem (:body b)))
+        prefix "http://www.fancy-url.com"
+        fake-options [(str prefix "/") {:status 200
+                              :opts {:url prefix}}
+                      (str prefix "/no-such-path") {:status 404
+                                                    :opts {:url (str prefix "/no-such-path")}}
+                      "http://fancy-url.com" {:status 200
+                                              :opts {:trace-redirects '("http://fancy-url.com")
+                                                     :url prefix}}]
+        res (with-fake-http fake-options
+              (process-nodes prefix nodes db-update-func))
+        ]
+    (testing "process-node should replace invalid href with valid href if possible"
+      (is (= "<a href=\"/no-such-path\">/no-such-path</a><a href=\"/\">http://fancy-url.com</a><a href=\"/\">home</a>"
+             @body-mem)))
+    ))

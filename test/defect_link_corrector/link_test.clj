@@ -96,3 +96,25 @@
       (is (= 2 (-> urls
                    problematic-links-only
                    count))))))
+
+(deftest can-correct-test
+  (let [can {:status 200
+             :origin-url "http://fancy-url.com"
+             :url-relative "/"}
+        can-not {:status 404
+                 :origin-url "/no-such-thing"
+                 :url-relative "/no-such-thing"
+                 }
+        can-not-200 {:status 200
+                     :origin-url "/some-path"
+                     :url-relative "/some-path"}]
+    (testing "only status 200 and origin-url not equals to url-relative can be corrected"
+      (are [x y] (= x y)
+           true (can-correct? can)
+           false (can-correct? can-not)
+           false (can-correct? can-not-200)))
+    (testing "links with status other than 200 will be treated as not correctable"
+      (are [x y] (= x y)
+           false (is-error? can-not-200)
+           false (recoverble-error? can-not-200)
+           false (recoverble-error? can-not)))))

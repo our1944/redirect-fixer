@@ -42,9 +42,9 @@
 
 (defn process-origin-url
   [prefix origin-url]
-  (let [absolute (partial to-absolute prefix)
+  (let [absolute-fn (partial to-absolute prefix)
         result-map (->> origin-url
-                        absolute
+                        absolute-fn
                         prob-url
                         (new-url-to-relative prefix))]
     (assoc result-map :origin-url origin-url)))
@@ -58,3 +58,27 @@
              (-> curr :status (= 200) not)
              (-> curr :trace-redirects empty? not)))
           url-maps))
+
+(defn can-correct?
+  "take an url-map as returned by process-origin-url, determine if can be fixed"
+  [url-map]
+  (let [status (:status url-map)
+        origin-url (:origin-url url-map)
+        url-relative (:url-relative url-map)]
+    (and  (= 200 status)
+          (not (= origin-url url-relative)))))
+
+(defn is-error?
+  "take an url-map as returned by process-origin-url, determine if it contains error"
+  [url-map]
+  (let [status (:status url-map)
+        origin-url (:origin-url url-map)
+        url-relative (:url-relative url-map)]
+    (or (not (= 200 status))
+        (not (= origin-url url-relative)))))
+
+(defn recoverble-error?
+  "take url-map as returned by process-origin-url, determine if recoverble"
+  [url-map]
+  (and (is-error? url-map)
+       (can-correct? url-map)))
