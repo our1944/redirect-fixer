@@ -3,4 +3,5 @@
       :subname "//127.0.0.1:3306/dbname"
       :user "root"
       :password "password"
-      }}
+      }
+ :prefix "http://some-prefix"}
