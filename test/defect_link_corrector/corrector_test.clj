@@ -79,4 +79,6 @@
     (testing "process-node should replace invalid href with valid href if possible"
       (is (= "<a href=\"/no-such-path\">/no-such-path</a><a href=\"/\">http://fancy-url.com</a><a href=\"/\">home</a>"
              @body-mem)))
+    (testing "check required k-v in result vector"
+      (is false)) ; correct me
     ))

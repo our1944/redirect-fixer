@@ -30,6 +30,13 @@
           text
           url-maps))
 
+(defn- process-url-map
+  [url-map]
+  (let [res-status (:status url-map)]
+    (-> url-map
+        (assoc :res-status res-status)
+        (dissoc :status))))
+
 (defn produce-node-links
   "take a node and build return node * (:links node), contains only error links"
   [node]
@@ -42,7 +49,7 @@
                          (not (link/recoverble-error? link)) (assoc link :replaced false))]
                   (if (nil? l)
                     acc
-                    (conj acc (merge node l)))))
+                    (conj acc (merge node (process-url-map l))))))
               '()
               links)
       node)))
