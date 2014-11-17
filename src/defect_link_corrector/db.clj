@@ -21,4 +21,4 @@
     (let [db-con (jdbc/get-connection db-spec)]
       (jdbc/with-db-transaction [db-con db-spec]
         (doseq [n nodes]
-          (update-node-body db-spec n :db-con db-con))))))
+          (update-node-body db-spec n))))))
