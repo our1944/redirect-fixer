@@ -19,7 +19,7 @@
   "generate a seq of links contained in a html snippet"
   [body]
   (let [snippet (html/html-snippet body)]
-    (html/select snippet [:a])))
+    (html/select snippet [[:a (html/attr? :href)]])))
 
 (defn to-absolute
   "deterine if url is "
