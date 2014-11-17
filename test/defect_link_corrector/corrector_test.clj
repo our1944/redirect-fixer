@@ -57,11 +57,14 @@
            2 (count processed)
            true (every? :nid processed)))))
 
+
 (deftest process-nodes-test
-  (let [body "<a href=\"/no-such-path\">/no-such-path</a><a href=\"http://fancy-url.com\">http://fancy-url.com</a><a href=\"/\">home</a>"
+  (let [required-fields [:nid :status :type :title :url-relative :title :res-status :replaced :origin-url]
+        body "<a href=\"/no-such-path\">/no-such-path</a><a href=\"http://fancy-url.com\">http://fancy-url.com</a><a href=\"/\">home</a>"
         nodes [{:nid 1
                 :status 1
                 :type "node"
+                :title "node 1"
                 :body body}]
         body-mem (atom "")
         db-update-func (fn [b] (compare-and-set! body-mem @body-mem (:body b)))
@@ -75,10 +78,19 @@
                                                      :url prefix}}]
         res (with-fake-http fake-options
               (process-nodes prefix nodes db-update-func))
-        ]
+        check-node-fields (fn
+                            [fields node-map]
+                            (every? (fn [f] (-> node-map f nil? not))fields))
+
+        check-nodes (fn
+                      ([acc node]
+                         (and acc (check-node-fields required-fields node)))
+                      ([]
+                         false))
+]
     (testing "process-node should replace invalid href with valid href if possible"
       (is (= "<a href=\"/no-such-path\">/no-such-path</a><a href=\"/\">http://fancy-url.com</a><a href=\"/\">home</a>"
              @body-mem)))
     (testing "check required k-v in result vector"
-      (is false)) ; correct me
-    ))
+      (is (= (reduce check-nodes true res) true)) ; correct me
+    )))
