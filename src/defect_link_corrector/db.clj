@@ -10,9 +10,8 @@
                     "WHERE n.status = 1 AND nr.body <> ''")]))
 
 (defn update-node-body
-  [db-spec node & {:keys [db-con]
-                   :or {db-con (jdbc/get-connection db-spec)}}]
-  (jdbc/update! db-con :node_revisions {:body (:body node)} ["nid = ?" (:nid node)]))
+  [db-spec node]
+  (jdbc/update! db-spec :node_revisions {:body (:body node)} ["nid = ?" (:nid node)]))
 
 
 (defn update-nodes-body

@@ -25,10 +25,10 @@
   [& args]
   (if (config-valid? config)
     (let [prefix (:prefix config)
-               db-spec (:db config)
-               nodes (db/get-nodes db-spec)
-               update-body-fn (partial db/update-node-body db-spec)
-               results (corrector/process-nodes prefix nodes update-body-fn)]
+          db-spec (:db config)
+          nodes (db/get-nodes db-spec)
+          update-body-fn (partial db/update-node-body db-spec)
+          results (corrector/process-nodes prefix nodes update-body-fn)]
       (output/write-csv results))
     ((println "Configuration file not valid!")
      (System/exit 1))))
