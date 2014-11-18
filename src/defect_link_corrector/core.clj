@@ -23,12 +23,19 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (if (config-valid? config)
-    (let [prefix (:prefix config)
-          db-spec (:db config)
-          nodes (db/get-nodes db-spec)
-          update-body-fn (partial db/update-node-body db-spec)
-          results (corrector/process-nodes prefix nodes update-body-fn)]
-      (output/write-csv results))
-    ((println "Configuration file not valid!")
-     (System/exit 1))))
+  (cond
+   (-> config config-valid? not) ((println "config file not valid!")
+                                  (System/exit 1))
+   (-> args empty?) ((println "output file must be given")
+                     (System/exit 1))
+   (let [f (clojure.java.io/as-file (first args))]
+     (and (-> f .canWrite not)
+         (-> f .createNewFile not))) ((println "output file not writeable")
+                                      (System/exit 1))
+   :else (let [prefix (:prefix config)
+               db-spec (:db config)
+               nodes (db/get-nodes db-spec)
+               update-body-fn (partial db/update-node-body db-spec)
+               results (corrector/process-nodes prefix nodes update-body-fn)]
+           (with-open [w (clojure.java.io/writer (first args) :append false :encoding "UTF8")]
+             (output/write-csv results :out-writer w)))))

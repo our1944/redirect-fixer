@@ -10,7 +10,8 @@
                  [org.xerial/sqlite-jdbc "3.7.2"]
                  [http-kit "2.1.16"]
                  [http-kit.fake "0.2.1"]
-                 [enlive "1.1.5"]]
+                 [enlive "1.1.5"]
+                 [intervox/clj-progress "0.1.5"]]
   :main ^:skip-aot defect-link-corrector.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}}

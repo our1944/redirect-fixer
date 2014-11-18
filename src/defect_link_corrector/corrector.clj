@@ -1,5 +1,6 @@
 (ns defect-link-corrector.corrector
-  (:require [defect-link-corrector.link :as link]))
+  (:require [defect-link-corrector.link :as link]
+            [clj-progress.core :as clj-progress]))
 
 (defn attach-links
   "take a key and drupal node, attach original links found to the node"
@@ -58,7 +59,9 @@
   "take list of drupal node maps, attach links to each one
   db-update-func should be a function which takes a node map and update body in node_revisions table"
   [prefix nodes db-update-func]
-  (reduce (fn [acc curr]
+  (clj-progress/init "processing nodes" (count nodes))
+  (def res (reduce (fn [acc curr]
+            (clj-progress/tick)
             (let [new-url-fn (get-new-url prefix)
                   old-body (:body curr)
                   origin-links (link/extract-links old-body)
@@ -72,3 +75,4 @@
                :else (into acc (produce-node-links new-node)))))
           []
           nodes))
+  (clj-progress/done res))
