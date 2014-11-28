@@ -1,7 +1,7 @@
-(ns defect-link-corrector.corrector-test
+(ns redirect-fixer.corrector-test
   (:require [clojure.test :refer :all]
-            [defect-link-corrector.corrector :refer :all]
-            [defect-link-corrector.db-test :refer :all])
+            [redirect-fixer.corrector :refer :all]
+            [redirect-fixer.db-test :refer :all])
   (:use org.httpkit.fake))
 
 (def node {:nid 1 :status 1 :title "node1" :type "node" :body "<a href=\"http://fancy-url.com/Some\">multiple redirects absolute</a><a href=\"wut-da-fuck\""})

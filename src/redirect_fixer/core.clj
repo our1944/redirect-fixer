@@ -1,9 +1,9 @@
-(ns defect-link-corrector.core
+(ns redirect-fixer.core
   (:gen-class)
   (require [clojure.edn :as edn]
-           [defect-link-corrector.db :as db]
-           [defect-link-corrector.corrector :as corrector]
-           [defect-link-corrector.output :as output]))
+           [redirect-fixer.db :as db]
+           [redirect-fixer.corrector :as corrector]
+           [redirect-fixer.output :as output]))
 
 (def file-separator (System/getProperty "file.separator"))
 (def home-dir (System/getProperty "user.home"))

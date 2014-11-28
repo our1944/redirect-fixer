@@ -1,6 +1,6 @@
-(ns defect-link-corrector.link-test
+(ns redirect-fixer.link-test
   (:require [clojure.test :refer :all]
-            [defect-link-corrector.link :refer :all]
+            [redirect-fixer.link :refer :all]
             [org.httpkit.client :as http])
   (:use org.httpkit.fake))
 

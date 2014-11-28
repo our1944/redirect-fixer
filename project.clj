@@ -1,4 +1,4 @@
-(defproject defect-link-corrector "0.1.0-SNAPSHOT"
+(defproject redirect-fixer "0.1.0-SNAPSHOT"
   :description "connect to drupal db and replace defect urls in node bodies"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -10,7 +10,7 @@
                  [http-kit "2.1.16"]
                  [enlive "1.1.5"]
                  [intervox/clj-progress "0.1.5"]]
-  :main ^:skip-aot defect-link-corrector.core
+  :main ^:skip-aot redirect-fixer.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
              :test {:dependencies [[http-kit.fake "0.2.1"]

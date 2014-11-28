@@ -1,6 +1,6 @@
-(ns defect-link-corrector.core-test
+(ns redirect-fixer.core-test
   (:require [clojure.test :refer :all]
-            [defect-link-corrector.core :refer :all]))
+            [redirect-fixer.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."

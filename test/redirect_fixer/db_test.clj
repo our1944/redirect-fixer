@@ -1,5 +1,5 @@
-(ns defect-link-corrector.db-test
-  (:require [defect-link-corrector.db :refer :all]
+(ns redirect-fixer.db-test
+  (:require [redirect-fixer.db :refer :all]
             [clojure.test :refer :all]
             [clojure.java.jdbc :as jdbc]))
 

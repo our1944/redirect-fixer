@@ -1,4 +1,4 @@
-(ns defect-link-corrector.link
+(ns redirect-fixer.link
   (:require [org.httpkit.client :as http]
             [net.cgrand.enlive-html :as html]))
 

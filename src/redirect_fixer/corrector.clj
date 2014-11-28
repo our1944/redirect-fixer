@@ -1,5 +1,5 @@
-(ns defect-link-corrector.corrector
-  (:require [defect-link-corrector.link :as link]
+(ns redirect-fixer.corrector
+  (:require [redirect-fixer.link :as link]
             [clj-progress.core :as clj-progress]))
 
 (defn attach-links

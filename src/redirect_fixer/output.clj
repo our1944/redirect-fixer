@@ -1,4 +1,4 @@
-(ns defect-link-corrector.output
+(ns redirect-fixer.output
   (:require [clojure.data.csv :as csv]))
 
 (def node-keys [:nid :type :status :title :origin-url :replaced :url-relative :res-status])
