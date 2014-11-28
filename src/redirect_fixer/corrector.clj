@@ -32,28 +32,27 @@
           url-maps))
 
 (defn- process-url-map
-  [url-map]
-  (let [res-status (:status url-map)]
+  [{:keys [status] :as url-map}]
     (-> url-map
-        (assoc :res-status res-status)
-        (dissoc :status))))
+        (assoc :res-status status)
+        (dissoc :status)))
 
 (defn produce-node-links
-  "take a node and build return node * (:links node), contains only error links"
-  [node]
-  (let [links (:links node)]
-    (if (-> links sequential?)
-      (reduce (fn [acc link]
-                (let [l (cond
-                         (not (link/is-error? link)) nil
-                         (link/can-correct? link) (assoc link :replaced true)
-                         (not (link/recoverble-error? link)) (assoc link :replaced false))]
-                  (if (nil? l)
-                    acc
-                    (conj acc (merge node (process-url-map l))))))
-              '()
-              links)
-      node)))
+  "take a node and build return production between node and (:links node),
+  contains only error links"
+  [{:keys [links] :as node}]
+  (if (sequential? links)
+    (reduce (fn [acc link]
+              (let [l (cond
+                       (not (link/is-error? link)) nil
+                       (link/can-correct? link) (assoc link :replaced true)
+                       (not (link/recoverble-error? link)) (assoc link :replaced false))]
+                (if (nil? l)
+                  acc
+                  (conj acc (merge node (process-url-map l))))))
+            '()
+            links)
+    node))
 
 (defn process-nodes
   "take list of drupal node maps, attach links to each one

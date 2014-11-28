@@ -17,7 +17,7 @@
 (defn update-nodes-body
   "take a db-sepc and a collection of nodes as map, update body"
   [db-spec nodes]
-  (if (not (empty? nodes))
+  (if-not (empty? nodes)
     (let [db-con (jdbc/get-connection db-spec)]
       (jdbc/with-db-transaction [db-con db-spec]
         (doseq [n nodes]
