@@ -24,14 +24,18 @@
   "I don't do a whole lot ... yet."
   [& args]
   (cond
+   ;; testing if config is valid
    (-> config config-valid? not) ((println "config file not valid!")
                                   (System/exit 1))
+   ;; checking if all args are given
    (-> args empty?) ((println "output file must be given")
                      (System/exit 1))
+   ;; check if output file is writable
    (let [f (clojure.java.io/as-file (first args))]
      (and (-> f .canWrite not)
          (-> f .createNewFile not))) ((println "output file not writeable")
                                       (System/exit 1))
+   ;; if all tests passed, starting to do the real job
    :else (let [prefix (:prefix config)
                db-spec (:db config)
                nodes (db/get-nodes db-spec)

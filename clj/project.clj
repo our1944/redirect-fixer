@@ -9,7 +9,9 @@
                  [mysql/mysql-connector-java "5.1.25"]
                  [http-kit "2.1.16"]
                  [enlive "1.1.5"]
-                 [intervox/clj-progress "0.1.5"]]
+                 [intervox/clj-progress "0.1.5"]
+                 [com.stuartsierra/component "0.2.2"]
+                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
   :main ^:skip-aot redirect-fixer.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
