@@ -1,4 +1,4 @@
-(ns redirect-fixer.db
+(ns redirect-fixer.db.db
   (:require [clojure.java.jdbc :as jdbc]))
 
 (defn get-nodes
